@@ -67,7 +67,7 @@ int Start(int port, GX_TRACE_LEVEL trace)
     ///////////////////////////////////////////////////////////////////////
     //Create Gurux DLMS server component for Short Name and start listen events.
     CGXDLMSServerSN SNServer(new CGXDLMSAssociationShortName(), new CGXDLMSIecHdlcSetup());
-    if ((ret = SNServer.Init(port, trace)) != 0)
+    if ((ret = SNServer.Init(port, trace)) != 0) //4060
     {
         return ret;
     }
@@ -78,7 +78,7 @@ int Start(int port, GX_TRACE_LEVEL trace)
     ///////////////////////////////////////////////////////////////////////
     //Create Gurux DLMS server component for Short Name and start listen events.
     CGXDLMSServerLN LNServer(new CGXDLMSAssociationLogicalName(), new CGXDLMSIecHdlcSetup());
-    if ((ret = LNServer.Init(port + 1, trace)) != 0)
+    if ((ret = LNServer.Init(port + 1, trace)) != 0) //4061
     {
         return ret;
     }
@@ -89,7 +89,7 @@ int Start(int port, GX_TRACE_LEVEL trace)
     ///////////////////////////////////////////////////////////////////////
     //Create Gurux DLMS server component for Short Name and start listen events.
     CGXDLMSServerSN_47 SN_47Server(new CGXDLMSAssociationShortName(), new CGXDLMSTcpUdpSetup());
-    if ((ret = SN_47Server.Init(port + 2, trace)) != 0)
+    if ((ret = SN_47Server.Init(port + 2, trace)) != 0) //4062
     {
         return ret;
     }
@@ -100,7 +100,7 @@ int Start(int port, GX_TRACE_LEVEL trace)
     ///////////////////////////////////////////////////////////////////////
     //Create Gurux DLMS server component for Short Name and start listen events.
     CGXDLMSServerLN_47 LN_47Server(new CGXDLMSAssociationLogicalName(), new CGXDLMSTcpUdpSetup());
-    if ((ret = LN_47Server.Init(port + 3, trace)) != 0)
+    if ((ret = LN_47Server.Init(port + 3, trace)) != 0) //4063
     {
         return ret;
     }
@@ -126,6 +126,7 @@ int _tmain(int argc, _TCHAR* argv[])
 int main(int argc, char* argv[])
 #endif
 {
+	printf("hello i am a dlms cosem server");
 #if defined(_WIN32) || defined(_WIN64)//Windows includes
     strcpy_s(DATAFILE, sizeof(DATAFILE), argv[0]);
 #else

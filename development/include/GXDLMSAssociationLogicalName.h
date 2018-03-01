@@ -58,7 +58,7 @@ private:
 
     std::string m_SecuritySetupReference;
 
-    std::vector<std::pair<unsigned char, std::string>> m_UserList;
+    std::vector<std::pair<unsigned char, std::string> > m_UserList;
 
     std::pair<unsigned char, std::string> m_CurrentUser;
 
@@ -97,12 +97,12 @@ public:
 
 
     /// Contains the identifiers of the COSEM client APs within the physical devices hosting these APs,
-    /// which belong to the AA modelled by the “Association LN” object.
+    /// which belong to the AA modelled by the ï¿½Association LNï¿½ object.
     unsigned char GetClientSAP();
     void SetClientSAP(unsigned char value);
 
     /// Contains the identifiers of the COSEM server (logical device) APs within the physical
-    /// devices hosting these APs, which belong to the AA modelled by the “Association LN” object.
+    /// devices hosting these APs, which belong to the AA modelled by the ï¿½Association LNï¿½ object.
     unsigned short GetServerSAP();
     void SetServerSAP(unsigned short value);
 
@@ -116,9 +116,9 @@ public:
 
     void SetSecret(CGXByteBuffer& value);
 
-    std::vector<std::pair<unsigned char, std::string>>& GetUserList();
+    std::vector<std::pair<unsigned char, std::string> >& GetUserList();
 
-    void SetUserList(std::vector<std::pair<unsigned char, std::string>>& value);
+    void SetUserList(std::vector<std::pair<unsigned char, std::string> >& value);
 
     std::pair<unsigned char, std::string>& GetCurrentUser();
 
