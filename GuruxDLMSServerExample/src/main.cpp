@@ -126,11 +126,12 @@ int _tmain(int argc, _TCHAR* argv[])
 int main(int argc, char* argv[])
 #endif
 {
-	printf("hello i am a dlms cosem server");
+	printf("Debug: hello i am a dlms cosem server\n");
 #if defined(_WIN32) || defined(_WIN64)//Windows includes
     strcpy_s(DATAFILE, sizeof(DATAFILE), argv[0]);
 #else
     strcpy(DATAFILE, argv[0]);
+    printf("Debug: the progrom was called with argV[0]= %s \n",argv[0]);
 #endif
 #if defined(_WIN32) || defined(_WIN64)//Windows includes
     char *p = _tcsrchr(DATAFILE, '\\');
@@ -146,6 +147,9 @@ int main(int argc, char* argv[])
     //Add empty file name.
     strcat(IMAGEFILE, "/empty.bin");
     strcat(DATAFILE, "/data.csv");
+
+    printf("Debug: IMAGEFILE= %s \n",IMAGEFILE);
+    printf("Debug: DATAFILE = %s \n",DATAFILE);
 #endif
 
     int opt, port = 4060;
@@ -212,6 +216,7 @@ int main(int argc, char* argv[])
 #endif
 #endif
 
+    printf("Debug: main() finished \n");
     return 0;
 }
 
