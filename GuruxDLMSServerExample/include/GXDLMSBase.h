@@ -77,6 +77,7 @@ public:
         m_ReceiverThread = -1;
 #endif
         SetMaxReceivePDUSize(1024);
+        printf("Debug: CGXDLMSBase() \r\n");
     }
 
     /////////////////////////////////////////////////////////////////////////

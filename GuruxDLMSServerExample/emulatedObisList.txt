@@ -1,0 +1,30 @@
+0.0.42.0.0.255  COSEM Logical Device Name
+1.0.0.2.0.255   Configuration program version number
+1.1.0.0.0.255   Electricity ID; #1
+1.1.0.0.1.255   Electricity ID; #2
+0.0.1.0.0.255   Clock object #1
+1.1.21.25.0.255 Ch. 1; L1 Reactive power- (QIII+QIV); Last avg. 3; Rate 0
+
+1.0.99.1.0.255	Ch. 0; Load profile with recording period 1; #1
+
+0.0.40.0.0.255	current association
+
+
+0.0.40.0.0.255, current association 
+0.0.22.0.0.255, IEC HDLC Setup
+0.0.42.0.0.255, COSEM Logical Device Name
+1.0.0.2.0.255,  Configuration program version number
+1.1.0.0.0.255,  Electricity ID #1
+1.1.0.0.1.255,  Electricity ID #1
+1.1.21.25.0.255, L1 Reactive Power
+0.0.1.0.0.255,  Clock Object
+1.0.99.1.0.255, Load profile with recording period 1 
+0.0.2.1.0.255,  Auto Connect
+0.0.13.0.0.255, Activity calender
+0.0.20.0.0.255, IEC optical port setup
+0.0.41.0.0.255, SAP assignment 
+0.0.2.2.0.255, 	Auto Answer
+0.0.2.0.0.255, 	Modem Configuration 
+0.0.25.2.0.255, Ethernet setup
+0.7.25.9.0.255, 
+0.0.44.0.0.255

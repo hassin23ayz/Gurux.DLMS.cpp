@@ -180,7 +180,7 @@ void ListenerThread(void* pVoid)
                 {
                     printf("-> %s\r\n", bb.ToHexString().c_str());
                 }
-                if (server->HandleRequest(bb, reply) != 0)
+                if (server->HandleRequest(bb, reply) != 0) //Ayz: data is forwarded to HandleRequest-method 
                 {
 #if defined(_WIN32) || defined(_WIN64)//If Windows
                     closesocket(socket);
@@ -242,6 +242,7 @@ int CGXDLMSBase::GetSocket()
 
 int CGXDLMSBase::StartServer(int port)
 {
+    printf("Debug: CGXDLMSBase::StartServer()\n");
     int ret;
     if ((ret = StopServer()) != 0)
     {
@@ -287,6 +288,7 @@ int CGXDLMSBase::StartServer(int port)
 
 int CGXDLMSBase::StopServer()
 {
+    printf("Debug: CGXDLMSBase::StopServer()\n");
     if (IsConnected())
     {
 #if defined(_WIN32) || defined(_WIN64)//Windows includes
@@ -343,7 +345,7 @@ CGXDLMSData* AddLogicalDeviceName(CGXDLMSObjectCollection& items, unsigned long 
 #if defined(_WIN32) || defined(_WIN64)//Windows
     sprintf_s(buff, "GRX%.13d", sn);
 #else
-    sprintf(buff, "GRX%.13d", sn);
+    sprintf(buff, "GRX%.13d", sn); //AYZ: here GRX:Gurux as a manufacturer
 #endif
     CGXDLMSVariant id;
     id.Add((const char*)buff, 16);
@@ -461,7 +463,7 @@ void AddOpticalPortSetup(CGXDLMSObjectCollection& items)
 */
 void AddDemandRegister(CGXDLMSObjectCollection& items)
 {
-    CGXDLMSDemandRegister* pDr = new CGXDLMSDemandRegister("0.0.1.0.0.255");
+    CGXDLMSDemandRegister* pDr = new CGXDLMSDemandRegister("0.0.1.0.0.255"); //Ayz: TODO ask kurumi why he did this 
     pDr->SetCurrentAvarageValue(10);
     pDr->SetLastAvarageValue(20);
     pDr->SetStatus(1);
@@ -585,6 +587,7 @@ CGXDLMSIp4Setup* AddIp4Setup(CGXDLMSObjectCollection& items, std::string& addres
 */
 int CGXDLMSBase::Init(int port, GX_TRACE_LEVEL trace)
 {
+    printf("Debug: CGXDLMSBase::init()\n");
     int ret;
     m_Trace = trace;
     if ((ret = StartServer(port)) != 0)
@@ -595,18 +598,25 @@ int CGXDLMSBase::Init(int port, GX_TRACE_LEVEL trace)
     std::string address;
     GetIpAddress(address);
 
-    unsigned long sn = 123456;
+    unsigned long sn = 123456;  //AYz:sn = serial number
     CGXDLMSData* ldn = AddLogicalDeviceName(GetItems(), sn);
+
+    printf("Debug: meterNo is added\n\r");
     //Add firmaware.
     AddFirmwareVersion(GetItems());
+    printf("Debug: firmware version is added\n\r");
     AddElectricityID1(GetItems(), sn);
     AddElectricityID2(GetItems(), sn);
+
+    printf("Debug: Electricity ID are added\n\r");
 
     //Add Last avarage.
     CGXDLMSRegister* pRegister = new CGXDLMSRegister("1.1.21.25.0.255");
     //Set access right. Client can't change Device name.
     pRegister->SetAccess(2, DLMS_ACCESS_MODE_READ);
     GetItems().push_back(pRegister);
+    printf("Debug: Electricity ID are added\n\r");
+
     //Add default clock. Clock's Logical Name is 0.0.1.0.0.255.
     CGXDLMSClock* pClock = new CGXDLMSClock();
     CGXDateTime begin(-1, 9, 1, -1, -1, -1, -1);
@@ -614,6 +624,7 @@ int CGXDLMSBase::Init(int port, GX_TRACE_LEVEL trace)
     CGXDateTime end(-1, 3, 1, -1, -1, -1, -1);
     pClock->SetEnd(end);
     GetItems().push_back(pClock);
+    printf("Debug: clock is added\n\r");
     ///////////////////////////////////////////////////////////////////////
     //Add profile generic (historical data) object.
     CGXDLMSProfileGeneric* profileGeneric = new CGXDLMSProfileGeneric("1.0.99.1.0.255");
@@ -621,7 +632,7 @@ int CGXDLMSBase::Init(int port, GX_TRACE_LEVEL trace)
     profileGeneric->SetCapturePeriod(60);
     profileGeneric->SetSortMethod(DLMS_SORT_METHOD_FIFO);
     profileGeneric->SetSortObject(pClock);
-    //Add colums.
+    //Add columns.
     //Set saved attribute index.
     CGXDLMSCaptureObject * capture = new CGXDLMSCaptureObject(2, 0);
     profileGeneric->GetCaptureObjects().push_back(std::pair<CGXDLMSObject*, CGXDLMSCaptureObject*>(pClock, capture));
@@ -654,6 +665,8 @@ int CGXDLMSBase::Init(int port, GX_TRACE_LEVEL trace)
     //Maximum row count.
     profileGeneric->SetEntriesInUse(rowCount);
     profileGeneric->SetProfileEntries(rowCount);
+
+    printf("Debug: profileGeneric type data is added\n\r");
 
     ///////////////////////////////////////////////////////////////////////
     //Add Auto connect object.
@@ -744,6 +757,7 @@ CGXDLMSObject* CGXDLMSBase::FindObject(
 */
 void GetProfileGenericDataByEntry(CGXDLMSProfileGeneric* p, long index, long count)
 {
+    printf("Debug: CGXDLMSBase::GetProfileGenericDataByEntry()\n");
     int len, month = 0, day = 0, year = 0, hour = 0, minute = 0, second = 0, value = 0;
     // Clear old data. It's already serialized.
     p->GetBuffer().clear();
@@ -804,6 +818,7 @@ void GetProfileGenericDataByEntry(CGXDLMSProfileGeneric* p, long index, long cou
 */
 void GetProfileGenericDataByRange(CGXDLMSValueEventArg* e)
 {
+    printf("Debug: CGXDLMSBase::GetProfileGenericDataByRange()\n");
     int len, month = 0, day = 0, year = 0, hour = 0, minute = 0, second = 0, value = 0;
     CGXDLMSVariant start, end;
     CGXByteBuffer bb;
@@ -875,8 +890,12 @@ int GetProfileGenericDataCount() {
 /////////////////////////////////////////////////////////////////////////////
 //
 /////////////////////////////////////////////////////////////////////////////
+
+//Ayz: Kurumi: If your value is static (it don't change) you can set when you create the object. 
+//If that is dynamic you can update the new value on PreRead.
 void CGXDLMSBase::PreRead(std::vector<CGXDLMSValueEventArg*>& args)
 {
+    //printf("Debug: in CGXDLMSBase::PreRead()\n");
     CGXDLMSVariant value;
     CGXDLMSObject* pObj;
     int ret, index;
@@ -888,7 +907,7 @@ void CGXDLMSBase::PreRead(std::vector<CGXDLMSValueEventArg*>& args)
         if ((*it)->GetIndex() == 1)
         {
             continue;
-        }
+        } 
         //Get attribute index.
         index = (*it)->GetIndex();
         pObj = (*it)->GetTarget();
@@ -896,6 +915,7 @@ void CGXDLMSBase::PreRead(std::vector<CGXDLMSValueEventArg*>& args)
         type = pObj->GetObjectType();
         if (type == DLMS_OBJECT_TYPE_PROFILE_GENERIC)
         {
+            printf("Debug: CGXDLMSBase::PreRead():profile generic type object asked\n");
             CGXDLMSProfileGeneric* p = (CGXDLMSProfileGeneric*)pObj;
             // If buffer is read and we want to save memory.
             if (index == 7)
@@ -952,6 +972,7 @@ void CGXDLMSBase::PreRead(std::vector<CGXDLMSValueEventArg*>& args)
             //Framework will handle profile generic automatically.
             type == DLMS_OBJECT_TYPE_PROFILE_GENERIC)
         {
+            printf("Debug: CGXDLMSBase::PreRead():association type object asked\n");
             continue;
         }
         DLMS_DATA_TYPE ui, dt;
@@ -960,12 +981,14 @@ void CGXDLMSBase::PreRead(std::vector<CGXDLMSValueEventArg*>& args)
         //Update date and time of clock object.
         if (type == DLMS_OBJECT_TYPE_CLOCK && index == 2)
         {
-            CGXDateTime tm = CGXDateTime::Now();
+            printf("Debug: CGXDLMSBase::PreRead():clock type object asked\n");
+            CGXDateTime tm = CGXDateTime::Now();           //Ayz: time is upadated here
             ((CGXDLMSClock*)pObj)->SetTime(tm);
             continue;
         }
         else if (type == DLMS_OBJECT_TYPE_REGISTER_MONITOR)
         {
+            printf("Debug: CGXDLMSBase::PreRead():register monitor type object asked\n");
             CGXDLMSRegisterMonitor* pRm = (CGXDLMSRegisterMonitor*)pObj;
             if (index == 2)
             {
@@ -978,12 +1001,14 @@ void CGXDLMSBase::PreRead(std::vector<CGXDLMSValueEventArg*>& args)
         }
         else
         {
+            printf("Debug: CGXDLMSBase::PreRead(): unknown type object asked\n");
             CGXDLMSVariant null;
             CGXDLMSValueEventArg e(pObj, index);
             ret = ((IGXDLMSBase*)pObj)->GetValue(m_Settings, e);
             if (ret != DLMS_ERROR_CODE_OK)
             {
                 //TODO: Show error.
+                printf("Debug: CGXDLMSBase::PreRead(): ERROR\n");
                 continue;
             }
             //If data is not assigned and value type is unknown return number.
@@ -997,12 +1022,68 @@ void CGXDLMSBase::PreRead(std::vector<CGXDLMSValueEventArg*>& args)
                 tp == DLMS_DATA_TYPE_UINT32 ||
                 tp == DLMS_DATA_TYPE_UINT64)
             {
+                printf("Debug: CGXDLMSBase::PreRead(): putting random value\n");
                 //Initialize random seed.
                 srand((unsigned int)time(NULL));
                 value = rand() % 100 + 1;
                 value.vt = tp;
-                e.SetValue(value);
+                e.SetValue(value);                           //AYz: value is updated here
             }
+            //Ayz++
+            else
+            {
+                switch(tp)
+                {
+                    case DLMS_DATA_TYPE_NONE:
+                        printf("data type> NONE\n");
+                        break;
+                    case DLMS_DATA_TYPE_BOOLEAN:
+                        printf("data type> boolean\n");
+                        break;
+                    case DLMS_DATA_TYPE_BIT_STRING:
+                        printf("data type> bit string\n");
+                        break;
+                    case DLMS_DATA_TYPE_OCTET_STRING:
+                        printf("data type> octet string\n");
+                        break;
+                    case DLMS_DATA_TYPE_BINARY_CODED_DESIMAL:
+                        printf("data type> bcd\n");
+                        break;
+                    case DLMS_DATA_TYPE_STRING_UTF8:
+                        printf("data type> utf8\n");
+                        break;
+                    case DLMS_DATA_TYPE_ENUM:
+                        printf("data type> enum\n");
+                        break;
+                    case DLMS_DATA_TYPE_FLOAT32:
+                        printf("data type> float 32\n");
+                        break;
+                    case DLMS_DATA_TYPE_FLOAT64:
+                        printf("data type> float 64\n");
+                        break;
+                    case DLMS_DATA_TYPE_DATETIME:
+                        printf("data type> date time\n");
+                        break;
+                    case DLMS_DATA_TYPE_DATE:
+                        printf("data type> date\n");
+                        break;
+                    case DLMS_DATA_TYPE_TIME:
+                        printf("data type> time\n");
+                        break;
+                    case DLMS_DATA_TYPE_ARRAY:
+                        printf("data type> array\n");
+                        break;
+                    case DLMS_DATA_TYPE_STRUCTURE:
+                        printf("data type> structure\n");
+                        break;
+                    case DLMS_DATA_TYPE_COMPACT_ARRAY:
+                        printf("data type> compact array\n");
+                        break;
+                    default:
+                        break;
+                }//switch
+            }
+            //++Ayz
         }
     }
 }
@@ -1016,6 +1097,7 @@ void CGXDLMSBase::PostRead(std::vector<CGXDLMSValueEventArg*>& args)
 /////////////////////////////////////////////////////////////////////////////
 void CGXDLMSBase::PreWrite(std::vector<CGXDLMSValueEventArg*>& args)
 {
+    printf("Debug: CGXDLMSBase::PreWrite()\n");
     std::string ln;
     for (std::vector<CGXDLMSValueEventArg*>::iterator it = args.begin(); it != args.end(); ++it)
     {
@@ -1130,6 +1212,7 @@ void HandleImageTransfer(CGXDLMSValueEventArg* e)
 /////////////////////////////////////////////////////////////////////////////
 void CGXDLMSBase::PreAction(std::vector<CGXDLMSValueEventArg*>& args)
 {
+    printf("Debug: CGXDLMSBase::PreAction()\n");
     for (std::vector<CGXDLMSValueEventArg*>::iterator it = args.begin(); it != args.end(); ++it)
     {
         if ((*it)->GetTarget()->GetObjectType() == DLMS_OBJECT_TYPE_IMAGE_TRANSFER)
@@ -1141,6 +1224,7 @@ void CGXDLMSBase::PreAction(std::vector<CGXDLMSValueEventArg*>& args)
 
 void Capture(CGXDLMSProfileGeneric* pg)
 {
+    printf("Debug: CGXDLMSBase::capture()\n");
     std::vector<std::string> values;
     std::string value;
     unsigned char first = 1;
@@ -1189,6 +1273,7 @@ void Capture(CGXDLMSProfileGeneric* pg)
 
 void HandleProfileGenericActions(CGXDLMSValueEventArg* it)
 {
+    printf("Debug: CGXDLMSBase::HandleProfileGenericActions()\n");
     CGXDLMSProfileGeneric* pg = (CGXDLMSProfileGeneric*)it->GetTarget();
     if (it->GetIndex() == 1)
     {
@@ -1212,6 +1297,7 @@ void HandleProfileGenericActions(CGXDLMSValueEventArg* it)
 /////////////////////////////////////////////////////////////////////////////
 void CGXDLMSBase::PostAction(std::vector<CGXDLMSValueEventArg*>& args)
 {
+    printf("Debug: CGXDLMSBase::PostAction()\n");
     for (std::vector<CGXDLMSValueEventArg*>::iterator it = args.begin(); it != args.end(); ++it)
     {
         if ((*it)->GetTarget()->GetObjectType() == DLMS_OBJECT_TYPE_PROFILE_GENERIC)
@@ -1348,9 +1434,9 @@ void CGXDLMSBase::Disconnected(
     }
 }
 
-void CGXDLMSBase::PreGet(
-    std::vector<CGXDLMSValueEventArg*>& args)
+void CGXDLMSBase::PreGet(std::vector<CGXDLMSValueEventArg*>& args)
 {
+    printf("Debug: CGXDLMSBase::PreGet()\n");
     for (std::vector<CGXDLMSValueEventArg*>::iterator it = args.begin(); it != args.end(); ++it)
     {
         if ((*it)->GetTarget()->GetObjectType() == DLMS_OBJECT_TYPE_PROFILE_GENERIC)

@@ -71,14 +71,13 @@ CGXDLMSServer::CGXDLMSServer(bool logicalNameReferencing,
     Reset();
 }
 
-CGXDLMSServer::CGXDLMSServer(
-    CGXDLMSAssociationLogicalName* ln,
-    CGXDLMSIecHdlcSetup* hdlc) :
-    CGXDLMSServer(true, DLMS_INTERFACE_TYPE_HDLC)
+CGXDLMSServer::CGXDLMSServer(CGXDLMSAssociationLogicalName* ln,CGXDLMSIecHdlcSetup* hdlc) :
+		CGXDLMSServer(true, DLMS_INTERFACE_TYPE_HDLC)
 {
     m_Settings.GetObjects().push_back(ln);
     m_Settings.GetObjects().push_back(hdlc);
     m_Hdlc = hdlc;
+    printf(" \n\r");
 }
 
 CGXDLMSServer::CGXDLMSServer(
@@ -975,13 +974,21 @@ int CGXDLMSServer::GetRequestNormal(CGXByteBuffer& data, unsigned char invokeID)
         return ret;
     }
 
+    //AYZ: look if the object is present in the server or not 
     CGXDLMSObject* obj = m_Settings.GetObjects().FindByLN(ci, ln);
     if (obj == NULL)
     {
         std::string name;
         GXHelpers::GetLogicalName(ln, name);
         obj = FindObject(ci, 0, name);
+        
     }
+    //AYZ++
+    std::string name;
+    GXHelpers::GetLogicalName(ln, name);
+    printf("Debug: CGXDLMSServer::GetRequestNormal(): logicalName of the requested object is: %s\n", name.c_str());
+    //++AYZ
+
     // Access selection
     unsigned char selection, selector = 0;
     if ((ret = data.GetUInt8(&selection)) != 0)
@@ -1022,6 +1029,7 @@ int CGXDLMSServer::GetRequestNormal(CGXByteBuffer& data, unsigned char invokeID)
             {
                 e->SetRowToPdu(GetRowsToPdu((CGXDLMSProfileGeneric*)obj));
             }
+            //printf("Debug: PreRead() called from CGXDLMSServer::GetRequestNormal()\n");
             PreRead(arr);
             if (!e->GetHandled())
             {
@@ -1104,6 +1112,7 @@ int CGXDLMSServer::GetRequestNextDataBlock(CGXByteBuffer& data, unsigned char in
                     for (std::vector<CGXDLMSValueEventArg*>::iterator arg = m_Transaction->GetTargets().begin();
                         arg != m_Transaction->GetTargets().end(); ++arg)
                     {
+                        printf("Debug: PreRead() called from CGXDLMSServer::GetRequestNextDataBlock()\n");
                         PreRead(m_Transaction->GetTargets());
                         if (!(*arg)->GetHandled())
                         {
@@ -1218,6 +1227,7 @@ int CGXDLMSServer::GetRequestWithList(CGXByteBuffer& data, unsigned char invokeI
             }
         }
     }
+    printf("Debug: PreRead() called from CGXDLMSServer::GetRequestWithList()\n");
     PreRead(list);
     pos = 0;
     for (std::vector<CGXDLMSValueEventArg*>::iterator it = list.begin(); it != list.end(); ++it)
@@ -1526,6 +1536,7 @@ int CGXDLMSServer::HandleReadBlockNumberAccess(
         }
         if (reads.size() != 0)
         {
+            printf("Debug: PreRead() called from CGXDLMSServer::HandleReadBlockNumberAccess()\n");
             PreRead(reads);
         }
 
@@ -1731,6 +1742,7 @@ int CGXDLMSServer::HandleReadRequest(CGXByteBuffer& data)
         }
         if (reads.size() != 0)
         {
+            printf("Debug: PreRead() called from CGXDLMSServer::HandleReadRequest()\n");
             PreRead(reads);
         }
         if (actions.size() != 0)

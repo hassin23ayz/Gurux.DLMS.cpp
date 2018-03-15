@@ -66,6 +66,8 @@ int Start(int port, GX_TRACE_LEVEL trace)
     //4059 is Official DLMS port.
     ///////////////////////////////////////////////////////////////////////
     //Create Gurux DLMS server component for Short Name and start listen events.
+
+    /*
     CGXDLMSServerSN SNServer(new CGXDLMSAssociationShortName(), new CGXDLMSIecHdlcSetup());
     if ((ret = SNServer.Init(port, trace)) != 0) //4060
     {
@@ -76,6 +78,8 @@ int Start(int port, GX_TRACE_LEVEL trace)
     printf("Gurux.DLMS.Client.Example.Net -r sn -h localhost -p %d\n", port);
     printf("----------------------------------------------------------\n");
     ///////////////////////////////////////////////////////////////////////
+
+    */
     //Create Gurux DLMS server component for Short Name and start listen events.
     CGXDLMSServerLN LNServer(new CGXDLMSAssociationLogicalName(), new CGXDLMSIecHdlcSetup());
     if ((ret = LNServer.Init(port + 1, trace)) != 0) //4061
@@ -87,6 +91,8 @@ int Start(int port, GX_TRACE_LEVEL trace)
     printf("GuruxDLMSClientExample -h localhost -p %d\n", port + 1);
     printf("----------------------------------------------------------\n");
     ///////////////////////////////////////////////////////////////////////
+
+    /*
     //Create Gurux DLMS server component for Short Name and start listen events.
     CGXDLMSServerSN_47 SN_47Server(new CGXDLMSAssociationShortName(), new CGXDLMSTcpUdpSetup());
     if ((ret = SN_47Server.Init(port + 2, trace)) != 0) //4062
@@ -108,6 +114,7 @@ int Start(int port, GX_TRACE_LEVEL trace)
     printf("Example connection settings:\n");
     printf("GuruxDLMSClientExample -h localhost -p %d -w\n", port + 3);
     printf("----------------------------------------------------------\n");
+    */
     printf("Press Enter to close application.\r\n");
     getchar();
     return 0;

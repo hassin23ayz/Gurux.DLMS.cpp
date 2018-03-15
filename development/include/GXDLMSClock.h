@@ -32,6 +32,8 @@
 // Full text may be retrieved at http://www.gnu.org/licenses/gpl-2.0.txt
 //---------------------------------------------------------------------------
 
+//AYZ: See Blue book : page 131
+
 #ifndef GXDLMSCLOCK_H
 #define GXDLMSCLOCK_H
 

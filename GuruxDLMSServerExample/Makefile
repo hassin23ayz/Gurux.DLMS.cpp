@@ -4,7 +4,7 @@ TARGET   = gurux.dlms.server.bin
 CC       = g++
 
 # compiling flags here
-CFLAGS   = -c
+CPPFLAGS   = -g -Wall -gstabs
 
 LINKER   = g++ -o
 
@@ -28,7 +28,7 @@ $(BINDIR)/$(TARGET): $(OBJECTS)
 	@echo "Linking complete!"
 
 $(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CPPFLAGS) -c $< -o $@
 	@echo "Compiled "$<" successfully!"
 
 .PHONEY: clean

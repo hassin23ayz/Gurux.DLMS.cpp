@@ -38,6 +38,8 @@
 #include <vector>
 #include "GXDLMSObject.h"
 
+//Ayz: This is the class where Objects aka data are pushed 
+
 class CGXDLMSObjectCollection : public std::vector<CGXDLMSObject*>
 {
 public:
