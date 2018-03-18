@@ -582,6 +582,56 @@ CGXDLMSIp4Setup* AddIp4Setup(CGXDLMSObjectCollection& items, std::string& addres
     return pIp4;
 }
 
+//Ayz++
+/**
+* Add myData
+*/
+void AddMyData_current(CGXDLMSObjectCollection& items)
+{
+    CGXDLMSRegister* currentRegister = new CGXDLMSRegister("1.0.31.7.0.255");
+    currentRegister->SetAccess(2, DLMS_ACCESS_MODE_READ);  //Set access right. Client can't change Device name.
+    //CGXDLMSVariant i = CGXDLMSVariant(23.45);
+    //currentRegister->SetValue(i);
+    items.push_back(currentRegister);
+    printf("Debug: current is added\n\r");
+
+}
+
+void AddMyData_voltage(CGXDLMSObjectCollection& items)
+{
+    CGXDLMSRegister* voltageRegister = new CGXDLMSRegister("1.0.32.7.0.255");
+    voltageRegister->SetAccess(2, DLMS_ACCESS_MODE_READ);  //Set access right. Client can't change Device name.
+    items.push_back(voltageRegister);
+    printf("Debug: voltage is added\n\r");
+
+}
+
+void AddMyData_activePower(CGXDLMSObjectCollection& items)
+{
+    CGXDLMSRegister* activePowerRegister = new CGXDLMSRegister("1.0.1.7.0.255");
+    activePowerRegister->SetAccess(2, DLMS_ACCESS_MODE_READ);  //Set access right. Client can't change Device name.
+    items.push_back(activePowerRegister);
+    printf("Debug: activePower is added\n\r");
+}
+
+void AddMyData_frequency(CGXDLMSObjectCollection& items)
+{
+    CGXDLMSRegister* frequencyRegister = new CGXDLMSRegister("1.0.14.7.0.255");
+    frequencyRegister->SetAccess(2, DLMS_ACCESS_MODE_READ);  //Set access right. Client can't change Device name.
+    items.push_back(frequencyRegister);
+    printf("Debug: frequency is added\n\r");
+
+}
+
+void AddMyData_energy(CGXDLMSObjectCollection& items)
+{
+    CGXDLMSRegister* energyRegister = new CGXDLMSRegister("1.0.15.8.0.255");
+    energyRegister->SetAccess(2, DLMS_ACCESS_MODE_READ);  //Set access right. Client can't change Device name.
+    items.push_back(energyRegister);
+    printf("Debug: energy is added\n\r");
+}
+//Ayz--
+
 /*
 * Generic initialize for all servers.
 */
@@ -615,7 +665,7 @@ int CGXDLMSBase::Init(int port, GX_TRACE_LEVEL trace)
     //Set access right. Client can't change Device name.
     pRegister->SetAccess(2, DLMS_ACCESS_MODE_READ);
     GetItems().push_back(pRegister);
-    printf("Debug: Electricity ID are added\n\r");
+    printf("Debug: Reactive power last avg is added\n\r");
 
     //Add default clock. Clock's Logical Name is 0.0.1.0.0.255.
     CGXDLMSClock* pClock = new CGXDLMSClock();
@@ -729,6 +779,16 @@ int CGXDLMSBase::Init(int port, GX_TRACE_LEVEL trace)
     CGXDLMSImageTransfer* image = new CGXDLMSImageTransfer();
     GetItems().push_back(image);
     ///////////////////////////////////////////////////////////////////////
+
+    //Ayz++
+    AddMyData_current(GetItems());
+    AddMyData_voltage(GetItems());
+    AddMyData_activePower(GetItems());
+    AddMyData_frequency(GetItems());
+    AddMyData_energy(GetItems());
+    //Ayz--
+
+
     //Server must initialize after all objects are added.
     ret = Initialize();
     if (ret != DLMS_ERROR_CODE_OK)
@@ -997,6 +1057,19 @@ void CGXDLMSBase::PreRead(std::vector<CGXDLMSValueEventArg*>& args)
                 pRm->GetThresholds().clear();
                 pRm->GetThresholds().push_back(rand() % 100 + 1);
                 continue;
+            }
+        }
+        else if (type == DLMS_OBJECT_TYPE_REGISTER)
+        {
+            printf("Debug: CGXDLMSBase::PreRead(): Register type object asked\n");
+            //TODO: switch by OBIS
+            CGXDLMSRegister* pR = (CGXDLMSRegister*)pObj;
+            if (index == 2)
+            {
+                //srand((unsigned int)time(NULL));
+                CGXDLMSVariant i = CGXDLMSVariant(rand()%100);
+                pR->SetValue(i);
+                GetItems().push_back(pR);
             }
         }
         else
