@@ -1066,42 +1066,42 @@ void CGXDLMSBase::PreRead(std::vector<CGXDLMSValueEventArg*>& args)
 
             std::string obis;
             pR->GetLogicalName(obis);
-            std::cout << "Debug: obis " << obis << "\n";
+            std::cout << "Debug: CGXDLMSBase::PreRead(): obis " << obis << "\n";
 
             //if value is asked
             if (index == 2) 
             {
                 if(obis.compare("1.0.31.7.0.255")==0)
                 {
-                    std::cout << "Debug: updating current [A]\n";
+                    std::cout << "Debug: CGXDLMSBase::PreRead(): updating current [A]\n";
                     CGXDLMSVariant i = CGXDLMSVariant(rand()%60+ 5);
                     pR->SetValue(i);
                     GetItems().push_back(pR);
                 }
                 else if(obis.compare("1.0.32.7.0.255")==0)
                 {
-                    std::cout << "Debug: updating voltage [V]\n";
+                    std::cout << "Debug: CGXDLMSBase::PreRead(): updating voltage [V]\n";
                     CGXDLMSVariant i = CGXDLMSVariant(rand()%30+ 210);
                     pR->SetValue(i);
                     GetItems().push_back(pR);
                 }
                 else if(obis.compare("1.0.1.7.0.255")==0)
                 {
-                    std::cout << "Debug: updating active power [KW]\n";
+                    std::cout << "Debug: CGXDLMSBase::PreRead(): updating active power [KW]\n";
                     CGXDLMSVariant i = CGXDLMSVariant(rand()%5+ 27);
                     pR->SetValue(i);
                     GetItems().push_back(pR);
                 }
                 else if(obis.compare("1.0.14.7.0.255")==0)
                 {
-                    std::cout << "Debug: updating frequency [Hz] \n";
+                    std::cout << "Debug: CGXDLMSBase::PreRead(): updating frequency [Hz] \n";
                     CGXDLMSVariant i = CGXDLMSVariant(rand()%5+ 48);
                     pR->SetValue(i);
                     GetItems().push_back(pR);
                 }
                 else if(obis.compare("1.0.15.8.0.255")==0)
                 {
-                    std::cout << "Debug: updating Active energy [KwHr] \n";
+                    std::cout << "Debug: CGXDLMSBase::PreRead(): updating Active energy [KwHr] \n";
                     CGXDLMSVariant i = CGXDLMSVariant(rand()%100+ 1);
                     pR->SetValue(i);
                     GetItems().push_back(pR);
