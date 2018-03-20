@@ -1059,6 +1059,7 @@ void CGXDLMSBase::PreRead(std::vector<CGXDLMSValueEventArg*>& args)
                 continue;
             }
         }
+        //Ayz++
         else if (type == DLMS_OBJECT_TYPE_REGISTER)
         {
             printf("Debug: CGXDLMSBase::PreRead(): Register type object asked\n");
@@ -1110,6 +1111,7 @@ void CGXDLMSBase::PreRead(std::vector<CGXDLMSValueEventArg*>& args)
                 {}
             }
         }
+        //Ayz++
         else
         {
             printf("Debug: CGXDLMSBase::PreRead(): unknown type object asked\n");
