@@ -421,7 +421,6 @@ void CGXDLMSVariant::Clear()
     {
         if (size == 0)
         {
-            
             assert(size != 0);
         }
         free(byteArr);

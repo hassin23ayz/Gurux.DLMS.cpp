@@ -35,32 +35,51 @@
 #include "../include/GXDLMSSecureServer.h"
 #include <unistd.h>
 
-CGXDLMSSecureServer::CGXDLMSSecureServer(bool UseLogicalNameReferencing,DLMS_INTERFACE_TYPE intefaceType) :
-    CGXDLMSServer(UseLogicalNameReferencing,intefaceType), m_Cipher("ABCDEFGH")
+CGXDLMSSecureServer::CGXDLMSSecureServer(bool UseLogicalNameReferencing,
+    DLMS_INTERFACE_TYPE intefaceType) :
+    CGXDLMSServer(
+        UseLogicalNameReferencing,
+        intefaceType), m_Cipher("ABCDEFGH")
 {
     m_Settings.SetCipher(&m_Cipher);
 }
 
-CGXDLMSSecureServer::CGXDLMSSecureServer(CGXDLMSAssociationLogicalName* ln,CGXDLMSIecHdlcSetup* hdlc) :
-    CGXDLMSServer(ln,hdlc), m_Cipher("ABCDEFGH")//Ayz: cipher value set here
+CGXDLMSSecureServer::CGXDLMSSecureServer(
+    CGXDLMSAssociationLogicalName* ln,
+    CGXDLMSIecHdlcSetup* hdlc) :
+    CGXDLMSServer(
+        ln,
+        hdlc), m_Cipher("ABCDEFGH")
 {
     m_Settings.SetCipher(&m_Cipher);
 }
 
-CGXDLMSSecureServer::CGXDLMSSecureServer(CGXDLMSAssociationLogicalName* ln,CGXDLMSTcpUdpSetup* wrapper) :
-    CGXDLMSServer(ln,wrapper), m_Cipher("ABCDEFGH")
+CGXDLMSSecureServer::CGXDLMSSecureServer(
+    CGXDLMSAssociationLogicalName* ln,
+    CGXDLMSTcpUdpSetup* wrapper) :
+    CGXDLMSServer(
+        ln,
+        wrapper), m_Cipher("ABCDEFGH")
 {
     m_Settings.SetCipher(&m_Cipher);
 }
 
-CGXDLMSSecureServer::CGXDLMSSecureServer(CGXDLMSAssociationShortName* sn,CGXDLMSIecHdlcSetup* hdlc) :
-    CGXDLMSServer(sn,hdlc), m_Cipher("ABCDEFGH")
+CGXDLMSSecureServer::CGXDLMSSecureServer(
+    CGXDLMSAssociationShortName* sn,
+    CGXDLMSIecHdlcSetup* hdlc) :
+    CGXDLMSServer(
+        sn,
+        hdlc), m_Cipher("ABCDEFGH")
 {
     m_Settings.SetCipher(&m_Cipher);
 }
 
-CGXDLMSSecureServer::CGXDLMSSecureServer(CGXDLMSAssociationShortName* sn,CGXDLMSTcpUdpSetup* wrapper) :
-    CGXDLMSServer(sn,wrapper), m_Cipher("ABCDEFGH")
+CGXDLMSSecureServer::CGXDLMSSecureServer(
+    CGXDLMSAssociationShortName* sn,
+    CGXDLMSTcpUdpSetup* wrapper) :
+    CGXDLMSServer(
+        sn,
+        wrapper), m_Cipher("ABCDEFGH")
 {
     m_Settings.SetCipher(&m_Cipher);
 }

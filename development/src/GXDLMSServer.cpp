@@ -71,8 +71,10 @@ CGXDLMSServer::CGXDLMSServer(bool logicalNameReferencing,
     Reset();
 }
 
-CGXDLMSServer::CGXDLMSServer(CGXDLMSAssociationLogicalName* ln,CGXDLMSIecHdlcSetup* hdlc) :
-		CGXDLMSServer(true, DLMS_INTERFACE_TYPE_HDLC)
+CGXDLMSServer::CGXDLMSServer(
+    CGXDLMSAssociationLogicalName* ln,
+    CGXDLMSIecHdlcSetup* hdlc) :
+    CGXDLMSServer(true, DLMS_INTERFACE_TYPE_HDLC)
 {
     m_Settings.GetObjects().push_back(ln);
     m_Settings.GetObjects().push_back(hdlc);
@@ -264,6 +266,9 @@ int CGXDLMSServer::Initialize()
                 list.insert(list.end(), GetItems().begin(), GetItems().end());
             }
             associationObject = *it;
+            ((CGXDLMSAssociationLogicalName*)*it)->GetXDLMSContextInfo().SetMaxReceivePduSize(m_Settings.GetMaxServerPDUSize());
+            ((CGXDLMSAssociationLogicalName*)*it)->GetXDLMSContextInfo().SetMaxSendPduSize(m_Settings.GetMaxServerPDUSize());
+            ((CGXDLMSAssociationLogicalName*)*it)->GetXDLMSContextInfo().SetConformance(m_Settings.GetProposedConformance());
         }
     }
     if (associationObject == NULL)
@@ -274,6 +279,9 @@ int CGXDLMSServer::Initialize()
             CGXDLMSObjectCollection& list = it2->GetObjectList();
             GetItems().push_back(it2);
             list.insert(list.end(), GetItems().begin(), GetItems().end());
+            ((CGXDLMSAssociationLogicalName*)it2)->GetXDLMSContextInfo().SetMaxReceivePduSize(m_Settings.GetMaxServerPDUSize());
+            ((CGXDLMSAssociationLogicalName*)it2)->GetXDLMSContextInfo().SetMaxSendPduSize(m_Settings.GetMaxServerPDUSize());
+            ((CGXDLMSAssociationLogicalName*)it2)->GetXDLMSContextInfo().SetConformance(m_Settings.GetProposedConformance());
         }
         else
         {
@@ -468,6 +476,43 @@ int CGXDLMSServer::HandleAarqRequest(
             return ret;
         }
         m_Settings.SetStoCChallenge(challenge);
+
+        if (m_Settings.GetUseLogicalNameReferencing())
+        {
+            unsigned char l[] = { 0,0,40,0,0,255 };
+            CGXDLMSAssociationLogicalName* ln = (CGXDLMSAssociationLogicalName*)m_Settings.GetObjects().FindByLN(DLMS_OBJECT_TYPE_ASSOCIATION_LOGICAL_NAME, l);
+            if (ln != NULL)
+            {
+                if (m_Settings.GetCipher() == NULL || m_Settings.GetCipher()->GetSecurity() == DLMS_SECURITY_NONE)
+                {
+                    ln->GetApplicationContextName().SetContextId(DLMS_APPLICATION_CONTEXT_NAME_LOGICAL_NAME);
+                }
+                else
+                {
+                    ln->GetApplicationContextName().SetContextId(DLMS_APPLICATION_CONTEXT_NAME_LOGICAL_NAME_WITH_CIPHERING);
+                }
+                ln->GetAuthenticationMechanismName().SetMechanismId(m_Settings.GetAuthentication());
+                ln->SetAssociationStatus(DLMS_ASSOCIATION_STATUS_ASSOCIATION_PENDING);
+            }
+        }
+    }
+    else
+    {
+        unsigned char l[] = { 0,0,40,0,0,255 };
+        CGXDLMSAssociationLogicalName* ln = (CGXDLMSAssociationLogicalName*)m_Settings.GetObjects().FindByLN(DLMS_OBJECT_TYPE_ASSOCIATION_LOGICAL_NAME, l);
+        if (ln != NULL)
+        {
+            if (m_Settings.GetCipher() == NULL || m_Settings.GetCipher()->GetSecurity() == DLMS_SECURITY_NONE)
+            {
+                ln->GetApplicationContextName().SetContextId(DLMS_APPLICATION_CONTEXT_NAME_LOGICAL_NAME);
+            }
+            else
+            {
+                ln->GetApplicationContextName().SetContextId(DLMS_APPLICATION_CONTEXT_NAME_LOGICAL_NAME_WITH_CIPHERING);
+            }
+            ln->GetAuthenticationMechanismName().SetMechanismId(m_Settings.GetAuthentication());
+            ln->SetAssociationStatus(DLMS_ASSOCIATION_STATUS_ASSOCIATED);
+        }
     }
     if (m_Settings.GetInterfaceType() == DLMS_INTERFACE_TYPE_HDLC)
     {
@@ -1997,6 +2042,11 @@ int CGXDLMSServer::HandleCommand(
             ret = CGXDLMS::GetHdlcFrame(m_Settings, frame, &m_ReplyData, reply);
         }
     }
+    if (cmd == DLMS_COMMAND_DISC ||
+        (m_Settings.GetInterfaceType() == DLMS_INTERFACE_TYPE_WRAPPER && cmd == DLMS_COMMAND_RELEASE_REQUEST))
+    {
+        Reset();
+    }
     return ret;
 }
 
@@ -2181,7 +2231,8 @@ int CGXDLMSServer::HandleRequest(
     }
     m_ReceivedData.Clear();
 
-    if (first)
+    if (first || m_Info.GetCommand() == DLMS_COMMAND_SNRM ||
+        (m_Settings.GetInterfaceType() == DLMS_INTERFACE_TYPE_WRAPPER && m_Info.GetCommand() == DLMS_COMMAND_AARQ))
     {
         // Check is data send to this server.
         if (!IsTarget(m_Settings.GetServerAddress(), m_Settings.GetClientAddress()))
@@ -2193,7 +2244,7 @@ int CGXDLMSServer::HandleRequest(
     // If client want next frame.
     if ((m_Info.GetMoreData() & DLMS_DATA_REQUEST_TYPES_FRAME) == DLMS_DATA_REQUEST_TYPES_FRAME)
     {
-        m_DataReceived = (long) time(NULL);
+        m_DataReceived = (long)time(NULL);
         return CGXDLMS::GetHdlcFrame(m_Settings, m_Settings.GetReceiverReady(), &m_ReplyData, reply);
     }
     // Update command if m_Transaction and next frame is asked.
@@ -2205,8 +2256,10 @@ int CGXDLMSServer::HandleRequest(
         }
     }
     // Check inactivity time out.
-    if (m_Hdlc != NULL && m_Hdlc->GetInactivityTimeout() != 0) {
-        if (m_Info.GetCommand() != DLMS_COMMAND_SNRM) {
+    if (m_Hdlc != NULL && m_Hdlc->GetInactivityTimeout() != 0)
+    {
+        if (m_Info.GetCommand() != DLMS_COMMAND_SNRM)
+        {
             long elapsed = (long)(time(NULL) - m_DataReceived);
             // If inactivity time out is elapsed.
             if (elapsed >= m_Hdlc->GetInactivityTimeout())
@@ -2217,8 +2270,10 @@ int CGXDLMSServer::HandleRequest(
             }
         }
     }
-    else if (m_Wrapper != NULL && m_Wrapper->GetInactivityTimeout() != 0) {
-        if (m_Info.GetCommand() != DLMS_COMMAND_AARQ) {
+    else if (m_Wrapper != NULL && m_Wrapper->GetInactivityTimeout() != 0)
+    {
+        if (m_Info.GetCommand() != DLMS_COMMAND_AARQ)
+        {
             long elapsed = (long)(time(NULL) - m_DataReceived);
             // If inactivity time out is elapsed.
             if (elapsed >= m_Wrapper->GetInactivityTimeout())
@@ -2231,7 +2286,7 @@ int CGXDLMSServer::HandleRequest(
     }
     ret = HandleCommand(connectionInfo, m_Info.GetCommand(), m_Info.GetData(), reply);
     m_Info.Clear();
-    m_DataReceived = (long) time(NULL);
+    m_DataReceived = (long)time(NULL);
     return ret;
 }
 

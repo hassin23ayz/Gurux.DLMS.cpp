@@ -39,6 +39,10 @@
 
 #include "GXDLMSObject.h"
 
+/**
+Online help:
+http://www.gurux.fi/Gurux.DLMS.Objects.CGXDLMSClock
+*/
 class CGXDLMSClock : public CGXDLMSObject
 {
     DLMS_CLOCK_BASE m_ClockBase;
