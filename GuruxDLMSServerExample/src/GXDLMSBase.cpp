@@ -463,11 +463,8 @@ void AddOpticalPortSetup(CGXDLMSObjectCollection& items)
 */
 void AddDemandRegister(CGXDLMSObjectCollection& items)
 {
-<<<<<<< HEAD
-    CGXDLMSDemandRegister* pDr = new CGXDLMSDemandRegister("0.0.1.0.0.255"); //Ayz: TODO ask kurumi why he did this 
-=======
+    //CGXDLMSDemandRegister* pDr = new CGXDLMSDemandRegister("0.0.1.0.0.255"); //Ayz: TODO ask kurumi why he did this 
     CGXDLMSDemandRegister* pDr = new CGXDLMSDemandRegister("1.0.31.4.0.255");
->>>>>>> master
     pDr->SetCurrentAvarageValue(10);
     pDr->SetLastAvarageValue(20);
     pDr->SetStatus(1);
@@ -778,6 +775,17 @@ int CGXDLMSBase::Init(int port, GX_TRACE_LEVEL trace)
     // Add 0.0.25.1.0.255 Ch. 0 IPv4 setup IP address.
     pPush->GetPushObjectList().push_back(std::pair<CGXDLMSObject*, CGXDLMSCaptureObject>(pIp4, CGXDLMSCaptureObject(3, 0)));
 
+    //Ayz++ 
+    pPush->GetPushObjectList().push_back(std::pair<CGXDLMSObject*, CGXDLMSCaptureObject>(pClock, CGXDLMSCaptureObject(2, 0)));
+
+    CGXDLMSRegister* frequencyRegister = new CGXDLMSRegister("1.0.14.7.0.255");
+    frequencyRegister->SetAccess(2, DLMS_ACCESS_MODE_READ);  //Set access right. Client can't change Device name.
+    CGXDLMSVariant freq = CGXDLMSVariant(50.23);
+    frequencyRegister->SetValue(freq);
+    GetItems().push_back(frequencyRegister);
+    pPush->GetPushObjectList().push_back(std::pair<CGXDLMSObject*, CGXDLMSCaptureObject>(frequencyRegister, CGXDLMSCaptureObject(2, 0)));
+    //Ayz++
+
     ///////////////////////////////////////////////////////////////////////
     //Add image transfer object.
     CGXDLMSImageTransfer* image = new CGXDLMSImageTransfer();
@@ -788,7 +796,7 @@ int CGXDLMSBase::Init(int port, GX_TRACE_LEVEL trace)
     AddMyData_current(GetItems());
     AddMyData_voltage(GetItems());
     AddMyData_activePower(GetItems());
-    AddMyData_frequency(GetItems());
+    //AddMyData_frequency(GetItems());
     AddMyData_energy(GetItems());
     //Ayz--
 

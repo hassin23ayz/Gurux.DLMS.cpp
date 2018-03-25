@@ -114,7 +114,10 @@ int Test()
 {
     int socket = -1;
     int ret;
-    int port = 4059;
+    //int port = 4059;
+    //AYZ++
+    int port = 4061;
+    //AYZ++
     CGXDLMSNotify cl(true, 1, 1, DLMS_INTERFACE_TYPE_WRAPPER);
     CGXDLMSPushSetup p;
     CGXDLMSClock clock;
@@ -123,7 +126,10 @@ int Test()
 
     ///////////////////////////////////////////////////////////////////////
     //Create Gurux DLMS server component for Short Name and start listen events.
-    CGXDLMSPushListener pushListener(true, DLMS_INTERFACE_TYPE_WRAPPER);
+    //CGXDLMSPushListener pushListener(true, DLMS_INTERFACE_TYPE_WRAPPER);
+    //AYZ++
+    CGXDLMSPushListener pushListener(true, DLMS_INTERFACE_TYPE_HDLC);
+    //AYZ++
     pushListener.StartServer(port);
     printf("Listening DLMS Push IEC 62056-47 messages on port %d.\r\n", port);
     printf("Press X to close and Enter to send a Push message.\r\n");
