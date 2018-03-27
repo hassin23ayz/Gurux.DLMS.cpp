@@ -35,9 +35,11 @@
 TARGET   = libgurux_dlms_cpp.a
 CC       = g++
 # compiling flags here
-CFLAGS   = -O3 -Wall -fPIC -g
+CFLAGS   = -O3 -Wall -fPIC -g -gstabs
+#CPPFLAGS   = -g -Wall -gstabs
 
 LINKER   = ar rvs
+#LINKER   = g++ -o
 
 # linking flags here
 LFLAGS   =  
