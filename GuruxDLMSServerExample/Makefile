@@ -9,7 +9,7 @@ CPPFLAGS   = -g -Wall -gstabs
 LINKER   = g++ -o
 
 # linking flags here
-LFLAGS   = -L../development/lib
+#LFLAGS   = -L../development/lib
 
 # change these to set the proper directories where each files should be
 
@@ -24,7 +24,8 @@ OBJECTS  := $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 rm       = rm -f
 
 $(BINDIR)/$(TARGET): $(OBJECTS)
-	@$(LINKER) $@ $(LFLAGS) $(OBJECTS) -lgurux_dlms_cpp -lpthread
+	#@$(LINKER) $@ $(LFLAGS) $(OBJECTS) -lgurux_dlms_cpp -lpthread
+	@$(LINKER) $@ $(OBJECTS) -lpthread
 	@echo "Linking complete!"
 
 $(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.cpp

@@ -55,8 +55,8 @@
 #include "../include/GXDLMSServerLN.h"
 #include "../include/GXDLMSServerSN_47.h"
 #include "../include/GXDLMSServerLN_47.h"
-#include "../../development/include/GXDLMSAssociationLogicalName.h"
-#include "../../development/include/GXDLMSAssociationShortName.h"
+#include "../include/GXDLMSAssociationLogicalName.h"
+#include "../include/GXDLMSAssociationShortName.h"
 
 
 int Start(int port, GX_TRACE_LEVEL trace)

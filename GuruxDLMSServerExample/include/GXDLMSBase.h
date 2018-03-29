@@ -76,7 +76,7 @@ public:
         m_ServerSocket = -1;
         m_ReceiverThread = -1;
 #endif
-        SetMaxReceivePDUSize(1024);
+        SetMaxReceivePDUSize(1024); //Ayz: you can increase PDU size here
         printf("Debug: CGXDLMSBase() \r\n");
     }
 

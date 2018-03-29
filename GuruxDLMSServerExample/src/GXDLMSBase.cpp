@@ -58,31 +58,31 @@
 
 #include "../include/GXDLMSBase.h"
 
-#include "../../development/include/GXTime.h"
-#include "../../development/include/GXDate.h"
-#include "../../development/include/GXDLMSClient.h"
-#include "../../development/include/GXDLMSData.h"
-#include "../../development/include/GXDLMSRegister.h"
-#include "../../development/include/GXDLMSClock.h"
-#include "../../development/include/GXDLMSTcpUdpSetup.h"
-#include "../../development/include/GXDLMSProfileGeneric.h"
-#include "../../development/include/GXDLMSAutoConnect.h"
-#include "../../development/include/GXDLMSIECOpticalPortSetup.h"
-#include "../../development/include/GXDLMSActivityCalendar.h"
-#include "../../development/include/GXDLMSDemandRegister.h"
-#include "../../development/include/GXDLMSRegisterMonitor.h"
-#include "../../development/include/GXDLMSActionSchedule.h"
-#include "../../development/include/GXDLMSSapAssignment.h"
-#include "../../development/include/GXDLMSAutoAnswer.h"
-#include "../../development/include/GXDLMSModemConfiguration.h"
-#include "../../development/include/GXDLMSMacAddressSetup.h"
-#include "../../development/include/GXDLMSModemInitialisation.h"
-#include "../../development/include/GXDLMSActionSet.h"
-#include "../../development/include/GXDLMSIp4Setup.h"
-#include "../../development/include/GXDLMSPushSetup.h"
-#include "../../development/include/GXDLMSAssociationLogicalName.h"
-#include "../../development/include/GXDLMSAssociationShortName.h"
-#include "../../development/include/GXDLMSImageTransfer.h"
+#include "../include/GXTime.h"
+#include "../include/GXDate.h"
+#include "../include/GXDLMSClient.h"
+#include "../include/GXDLMSData.h"
+#include "../include/GXDLMSRegister.h"
+#include "../include/GXDLMSClock.h"
+#include "../include/GXDLMSTcpUdpSetup.h"
+#include "../include/GXDLMSProfileGeneric.h"
+#include "../include/GXDLMSAutoConnect.h"
+#include "../include/GXDLMSIECOpticalPortSetup.h"
+#include "../include/GXDLMSActivityCalendar.h"
+#include "../include/GXDLMSDemandRegister.h"
+#include "../include/GXDLMSRegisterMonitor.h"
+#include "../include/GXDLMSActionSchedule.h"
+#include "../include/GXDLMSSapAssignment.h"
+#include "../include/GXDLMSAutoAnswer.h"
+#include "../include/GXDLMSModemConfiguration.h"
+#include "../include/GXDLMSMacAddressSetup.h"
+#include "../include/GXDLMSModemInitialisation.h"
+#include "../include/GXDLMSActionSet.h"
+#include "../include/GXDLMSIp4Setup.h"
+#include "../include/GXDLMSPushSetup.h"
+#include "../include/GXDLMSAssociationLogicalName.h"
+#include "../include/GXDLMSAssociationShortName.h"
+#include "../include/GXDLMSImageTransfer.h"
 
 using namespace std;
 #if defined(_WIN32) || defined(_WIN64)//Windows
@@ -219,7 +219,7 @@ void ListenerThread(void* pVoid)
 
 #if defined(_WIN32) || defined(_WIN64)//If Windows
 #else //If Linux
-void * UnixListenerThread(void * pVoid)
+void * UnixListenerThread(void * pVoid) //Ayz: function pointer is used 
 {
     ListenerThread(pVoid);
     return NULL;
@@ -248,31 +248,40 @@ int CGXDLMSBase::StartServer(int port)
     {
         return ret;
     }
-    m_ServerSocket = socket(AF_INET, SOCK_STREAM, 0);
+    /*
+    Ayz:
+    Address Family - AF_INET (this is IP version 4)
+    Type - SOCK_STREAM (this means connection oriented TCP protocol)
+    Protocol - 0 [ or IPPROTO_IP This is IP protocol]
+    */
+    m_ServerSocket = socket(AF_INET, SOCK_STREAM, 0); 
     if (!IsConnected())
     {
         //socket creation.
         return -1;
     }
     int fFlag = 1;
+    //ayz:set some socket options
     if (setsockopt(m_ServerSocket, SOL_SOCKET, SO_REUSEADDR, (char *)&fFlag, sizeof(fFlag)) == -1)
     {
         //setsockopt.
         return -1;
     }
-    sockaddr_in add = { 0 };
-    add.sin_port = htons(port);
-    add.sin_addr.s_addr = htonl(INADDR_ANY);
+    //Ayz: Prepare the "sockaddr_in" structure
+    sockaddr_in addr = { 0 };
+    addr.sin_port = htons(port);
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
 #if defined(_WIN32) || defined(_WIN64)//Windows includes
-    add.sin_family = AF_INET;
+    addr.sin_family = AF_INET;
 #else
-    add.sin_family = AF_INET;
+    addr.sin_family = AF_INET;
 #endif
-    if ((ret = ::bind(m_ServerSocket, (sockaddr*)&add, sizeof(add))) == -1)
+    if ((ret = ::bind(m_ServerSocket, (sockaddr*)&addr, sizeof(addr))) == -1)
     {
         //bind;
         return -1;
     }
+    //Ayz:put the socket into listening mode
     if ((ret = listen(m_ServerSocket, 1)) == -1)
     {
         //socket listen failed.
@@ -303,7 +312,7 @@ int CGXDLMSBase::StopServer()
         close(m_ServerSocket);
         m_ServerSocket = -1;
         void *res;
-        pthread_join(m_ReceiverThread, (void **)&res);
+        pthread_join(m_ReceiverThread, (void **)&res);  //Ayz: wait for termination of another thread
         free(res);
 #endif
     }
